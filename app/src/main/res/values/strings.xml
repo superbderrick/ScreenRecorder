@@ -3,4 +3,10 @@
 
     <string name="button_recording">Recording</string>
     <string name="button_start">Start</string>
+    <string name="permission_denied">Permission denied</string>
+    <string name="permission_denied_message">App going to close. You should allow required permissions to let record
+        function work property
+    </string>
+
+    <string name="init_error_media_recorder">Unable to init MediaRecorder</string>
 </resources>
