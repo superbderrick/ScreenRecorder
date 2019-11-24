@@ -9,4 +9,12 @@
     </string>
 
     <string name="init_error_media_recorder">Unable to init MediaRecorder</string>
+    <string name="fail_storage">Failed to get External Storage</string>
+    <string name="fail_directory">Failed to create Recordings directory</string>
+    <string name="record_error">Recording error</string>
+    <string name="screen_cast_denied">Screen Cast Permission Denied</string>
+    <string name="media_stopped">MediaProjection Stopped</string>
+    <string name="start_record_fail">Unable to start record</string>
+    <string name="stop_record_success">Stop recording screen success</string>
+    <string name="stop_record_fail">Stop recording screen failed</string>
 </resources>

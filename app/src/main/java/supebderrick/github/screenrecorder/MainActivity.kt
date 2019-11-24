@@ -1,20 +1,25 @@
 package supebderrick.github.screenrecorder
 
 import android.Manifest
+import android.annotation.SuppressLint
+import android.app.Activity
 import android.app.AlertDialog
 import android.content.Context
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.hardware.display.DisplayManager
 import android.hardware.display.VirtualDisplay
 import android.media.MediaRecorder
 import android.media.projection.MediaProjection
 import android.media.projection.MediaProjectionManager
+import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Debug
 import android.util.DisplayMetrics
 import android.util.Log
 import android.widget.Button
+import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import java.io.IOException
 
@@ -37,11 +42,15 @@ class MainActivity : AppCompatActivity() {
         )
     }
 
+    private var mLatestFilepath: String? = null
+
+    private var mProjectionManager: MediaProjectionManager? = null
+
     private lateinit var recordingButton : Button
-    private lateinit var mProjectionManager: MediaProjectionManager
-    private lateinit var mMediaProjection: MediaProjection
-    private lateinit var mVirtualDisplay: VirtualDisplay
-    private lateinit var mMediaRecorder: MediaRecorder
+    private var mMediaProjection: MediaProjection? = null
+    private var mVirtualDisplay: VirtualDisplay? = null
+    private lateinit var mMediaProjectionCallback: MediaProjectionCallback
+    private var mMediaRecorder: MediaRecorder? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -49,14 +58,40 @@ class MainActivity : AppCompatActivity() {
 
         initialize()
 
-        recordingButton = findViewById(R.id.recordingButton)
-
-        recordingButton.setOnClickListener {
-
-        }
+        setupGUIComponents()
 
         checkPermissions()
 
+    }
+
+    private fun setupGUIComponents() {
+        recordingButton = findViewById(R.id.recordingButton)
+
+        var stopRecording = false
+
+        recordingButton.setOnClickListener {
+
+            if(isRecording) {
+                stopRecordingScreen()
+                stopRecording = true
+            } else {
+                requestStartRecordingScreen()
+                stopRecording = true
+            }
+
+            changeButtonText(stopRecording)
+
+        }
+
+    }
+
+    private fun changeButtonText(stopRecording:Boolean)
+    {
+        if(stopRecording) {
+            recordingButton.setText(R.string.button_recording)
+        } else {
+            recordingButton.setText(R.string.button_start)
+        }
     }
 
     private fun checkPermissions() {
@@ -72,15 +107,16 @@ class MainActivity : AppCompatActivity() {
 
     }
 
-
     private fun initialize() {
         val metrics = DisplayMetrics()
         windowManager.defaultDisplay.getMetrics(metrics)
+        mScreenDensity = metrics.densityDpi
         mProjectionManager = getSystemService(Context.MEDIA_PROJECTION_SERVICE) as MediaProjectionManager
     }
 
     private fun requestStartRecordingScreen() {
         val initMedia = prepareMediaRecorder()
+
         if (!initMedia) {
             Log.w(TAG, getString(R.string.init_error_media_recorder))
             return
@@ -95,6 +131,8 @@ class MainActivity : AppCompatActivity() {
         }
 
         mVirtualDisplay = createVirtualDisplay()
+
+        isRecording = true
 
     }
 
@@ -133,6 +171,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun prepareMediaRecorder(): Boolean {
+
         mMediaRecorder = MediaRecorder()
         mMediaRecorder?.setAudioSource(MediaRecorder.AudioSource.MIC)
         mMediaRecorder?.setVideoSource(MediaRecorder.VideoSource.SURFACE)
@@ -142,20 +181,103 @@ class MainActivity : AppCompatActivity() {
         mMediaRecorder?.setVideoEncodingBitRate(512 * 1000)
         mMediaRecorder?.setVideoFrameRate(30)
         mMediaRecorder?.setVideoSize(
-            DISPLAY_WIDTH,
-            DISPLAY_HEIGHT
+                DISPLAY_WIDTH,
+                DISPLAY_HEIGHT
         )
+
+        mLatestFilepath = Utills.getFilePath(this)
+        mMediaRecorder?.setOutputFile(mLatestFilepath)
+
+        try {
+            mMediaRecorder?.prepare()
+        } catch (e: IOException) {
+            Log.w(TAG, getString(R.string.record_error))
+            mMediaRecorder = null
+            return false
+        }
+
         return true
     }
 
-    private fun createVirtualDisplay(): VirtualDisplay {
+    private fun createVirtualDisplay(): VirtualDisplay? {
         return mMediaProjection?.createVirtualDisplay(
-            "MainActivity",
-            DISPLAY_WIDTH,
-            DISPLAY_HEIGHT,
-            mScreenDensity,
-            DisplayManager.VIRTUAL_DISPLAY_FLAG_AUTO_MIRROR,
-            mMediaRecorder?.surface, null /*Handler*/, null
+                "MainActivity",
+                DISPLAY_WIDTH,
+                DISPLAY_HEIGHT,
+                mScreenDensity,
+                DisplayManager.VIRTUAL_DISPLAY_FLAG_AUTO_MIRROR,
+                mMediaRecorder?.surface, null /*Handler*/, null
         )
+    }
+
+
+     public override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+         super.onActivityResult(requestCode, resultCode, data)
+
+        if (requestCode != PERMISSION_CODE) {
+            Log.e(TAG, "Unknown request code: $requestCode")
+            return
+        }
+        if (resultCode != Activity.RESULT_OK) {
+            Toast.makeText(
+                    this,
+                    getString(R.string.screen_cast_denied), Toast.LENGTH_SHORT
+            ).show()
+
+            showDialogPermission()
+            return
+        }
+
+        initializeMediaProjection(resultCode, data!!)
+
+        startRecording()
+    }
+
+    private fun initializeMediaProjection(resultCode: Int, data: Intent) {
+        mMediaProjectionCallback = MediaProjectionCallback()
+
+        mMediaProjection = mProjectionManager?.getMediaProjection(resultCode, data)
+        mMediaProjection?.registerCallback(mMediaProjectionCallback, null)
+    }
+
+    private fun startRecording() {
+        mVirtualDisplay = createVirtualDisplay()
+
+        try {
+            mMediaRecorder?.start()
+        } catch (e: RuntimeException) {
+            Log.d(TAG, getString(R.string.start_record_fail))
+            finish()
+        }
+    }
+    private fun stopRecordingScreen() {
+        try {
+            mMediaRecorder?.stop()
+        } catch (e: Exception) {
+
+        } finally {
+            mMediaRecorder?.release()
+            mMediaRecorder = null
+        }
+
+        try {
+            mMediaProjection?.stop()
+            mVirtualDisplay?.release()
+        } catch (e: java.lang.Exception) {
+            Log.d(TAG, getString(R.string.stop_record_fail))
+        } finally {
+            mMediaProjection = null
+            mVirtualDisplay = null
+        }
+        isRecording = false
+
+        Log.d(TAG, getString(R.string.stop_record_success))
+    }
+
+    inner class MediaProjectionCallback : MediaProjection.Callback() {
+        override fun onStop() {
+
+            Log.i(TAG, getString(R.string.media_stopped))
+        }
     }
 }
