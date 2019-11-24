@@ -1,5 +1,6 @@
 package supebderrick.github.screenrecorder
 
+import android.Manifest
 import android.app.AlertDialog
 import android.content.Context
 import android.content.pm.PackageManager
@@ -14,6 +15,7 @@ import android.os.Debug
 import android.util.DisplayMetrics
 import android.util.Log
 import android.widget.Button
+import androidx.core.app.ActivityCompat
 import java.io.IOException
 
 class MainActivity : AppCompatActivity() {
@@ -21,7 +23,7 @@ class MainActivity : AppCompatActivity() {
     private var isRecording = false
 
     companion object {
-        const val TAG = "zen8labs"
+        const val TAG = "screenRecoder"
         const val LIST_ITEM_REQUEST_CODE = 101
         const val PERMISSION_CODE = 1
         const val DISPLAY_WIDTH = 480
@@ -50,9 +52,26 @@ class MainActivity : AppCompatActivity() {
         recordingButton = findViewById(R.id.recordingButton)
 
         recordingButton.setOnClickListener {
-            Log.d("derrick" , "Clicked")
+
         }
+
+        checkPermissions()
+
     }
+
+    private fun checkPermissions() {
+        if(!Utills.hasPermissions(this,Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                        Manifest.permission.RECORD_AUDIO))
+        {
+            ActivityCompat.requestPermissions(
+                    this,
+                    PERMISSIONS,
+                    PERMISSION_ALL
+            )
+        }
+
+    }
+
 
     private fun initialize() {
         val metrics = DisplayMetrics()
