@@ -62,12 +62,12 @@ class MainActivity : AppCompatActivity() {
 
         checkPermissions()
 
-        val mpRecorder = RecorderFactory().buildRecoder(RecorderType.MEDIAPROTECTION)
-        val mcRecorder = RecorderFactory().buildRecoder(RecorderType.MIDIACODEC)
+        val mpRecorder = RecorderFactory().buildRecoder(RecorderType.MEDIAPROTECTION ,this)
 
 
-        Log.d("derrickTest mp ", mpRecorder!!.toString())
-        Log.d("derrickTest mc", mcRecorder!!.toString())
+
+        Log.d("derrickTest mp ", mpRecorder!!.context.hashCode().toString())
+
 
 
     }

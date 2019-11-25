@@ -1,13 +1,20 @@
 package recoder
 
-import java.sql.DriverManager.println
+import android.app.Activity
+import android.content.Context
 
-class MDScreenRecorder(mediaType: MediaType) : ScreenRecorder(RecorderType.MEDIAPROTECTION, mediaType) {
+
+class MDScreenRecorder(mediaType: MediaType,
+                       context: Context) : ScreenRecorder(RecorderType.MEDIAPROTECTION, context) {
     init {
         construct()
     }
 
     override fun construct() {
-        println("Created MDRecorder")
+
+    }
+
+    private fun testValue() {
+
     }
 }

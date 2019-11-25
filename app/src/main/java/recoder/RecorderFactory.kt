@@ -1,18 +1,15 @@
 package recoder
 
+import android.content.Context
+
 
 class RecorderFactory {
-    fun buildRecoder(type: RecorderType): ScreenRecorder? {
+    fun buildRecoder(type: RecorderType , context: Context): ScreenRecorder? {
         var screenRecorder: ScreenRecorder? = null
 
-        val location = MediaType.AUDIOONLY
+        when (type) {
+            RecorderType.MEDIAPROTECTION -> screenRecorder = ScreenRecoderFactory.buildRecoder(type,context)
 
-        when (location) {
-            MediaType.VIDEOONLY -> screenRecorder = VideoFactory.buildRecoder(type)
-
-            MediaType.AUDIOONLY -> screenRecorder = AudioFactory().buildRecoder(type)
-
-            else -> screenRecorder = buildRecoder(type)
         }
 
         return screenRecorder

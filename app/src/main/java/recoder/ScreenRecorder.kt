@@ -1,19 +1,21 @@
 package recoder
 
+import android.content.Context
 
-abstract class ScreenRecorder(model: RecorderType, mediaType: MediaType) {
 
-    var model: RecorderType? = null
-    var mediaType: MediaType? = null
+abstract class ScreenRecorder(recoderType: RecorderType,context: Context) {
+
+    var recoderType: RecorderType? = null
+    var context: Context? = null
 
     init {
-        this.model = model
-        this.mediaType = mediaType
+        this.recoderType = recoderType
+        this.context = context
     }
 
     abstract fun construct()
 
     override fun toString(): String {
-        return "CarModel - $model located in $mediaType"
+        return "Recoder Type - $recoderType located "
     }
 }
