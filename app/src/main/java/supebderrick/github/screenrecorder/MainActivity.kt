@@ -1,7 +1,6 @@
 package supebderrick.github.screenrecorder
 
 import android.Manifest
-import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.AlertDialog
 import android.content.Context
@@ -12,15 +11,15 @@ import android.hardware.display.VirtualDisplay
 import android.media.MediaRecorder
 import android.media.projection.MediaProjection
 import android.media.projection.MediaProjectionManager
-import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.os.Debug
 import android.util.DisplayMetrics
 import android.util.Log
 import android.widget.Button
 import android.widget.Toast
 import androidx.core.app.ActivityCompat
+import recoder.RecorderFactory
+import recoder.RecorderType
 import java.io.IOException
 
 class MainActivity : AppCompatActivity() {
@@ -52,6 +51,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var mMediaProjectionCallback: MediaProjectionCallback
     private var mMediaRecorder: MediaRecorder? = null
 
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -61,6 +61,14 @@ class MainActivity : AppCompatActivity() {
         setupGUIComponents()
 
         checkPermissions()
+
+        val mpRecorder = RecorderFactory().buildRecoder(RecorderType.MEDIAPROTECTION)
+        val mcRecorder = RecorderFactory().buildRecoder(RecorderType.MIDIACODEC)
+
+
+        Log.d("derrickTest mp ", mpRecorder!!.toString())
+        Log.d("derrickTest mc", mcRecorder!!.toString())
+
 
     }
 
