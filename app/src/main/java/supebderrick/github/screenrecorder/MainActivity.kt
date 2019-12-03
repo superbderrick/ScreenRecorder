@@ -65,9 +65,7 @@ class MainActivity : AppCompatActivity() {
         val mpRecorder = RecorderFactory().buildRecoder(RecorderType.MEDIAPROTECTION ,this)
 
 
-
         Log.d("derrickTest mp ", mpRecorder!!.context.hashCode().toString())
-
 
 
     }
@@ -79,9 +77,10 @@ class MainActivity : AppCompatActivity() {
 
         recordingButton.setOnClickListener {
 
+            Log.d("derrick" , "real Value :  $isRecording" );
             if(isRecording) {
                 stopRecordingScreen()
-                stopRecording = true
+                stopRecording = false
             } else {
                 requestStartRecordingScreen()
                 stopRecording = true
@@ -140,7 +139,7 @@ class MainActivity : AppCompatActivity() {
 
         mVirtualDisplay = createVirtualDisplay()
 
-        isRecording = true
+
 
     }
 
@@ -253,6 +252,7 @@ class MainActivity : AppCompatActivity() {
 
         try {
             mMediaRecorder?.start()
+            isRecording = true
         } catch (e: RuntimeException) {
             Log.d(TAG, getString(R.string.start_record_fail))
             finish()
