@@ -64,9 +64,7 @@ class MainActivity : AppCompatActivity() {
 
         val mpRecorder = RecorderFactory().buildRecoder(RecorderType.MEDIAPROTECTION ,this)
 
-
-        Log.d("derrickTest mp ", mpRecorder!!.context.hashCode().toString())
-
+        mpRecorder?.setupRecoder()
 
     }
 

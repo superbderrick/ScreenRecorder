@@ -18,4 +18,10 @@ abstract class ScreenRecorder(recoderType: RecorderType,context: Context) {
     override fun toString(): String {
         return "Recoder Type - $recoderType located "
     }
+
+    fun setupRecoder(): Int {
+        return 0
+    }
+
+
 }
