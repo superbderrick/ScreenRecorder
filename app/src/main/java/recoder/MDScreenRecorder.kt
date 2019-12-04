@@ -43,6 +43,9 @@ class MDScreenRecorder(mediaType: MediaType,
     
 
     init {
+
+        mContext = context
+
         construct()
     }
 
@@ -51,24 +54,39 @@ class MDScreenRecorder(mediaType: MediaType,
     }
 
     private fun initInternal() {
-        setupContext()
+
+        var errorForWindow = setupWindowDisPlay()
+
+        var errorForMediaRecoder = setupMediaRecoder()
+
     }
 
-    private fun setupContext() {
-            mContext = context
-    }
+    private fun setupWindowDisPlay() : Int {
+        var isError = 0
 
-    private fun getDisPlay() {
         val metrics = DisplayMetrics()
-        var windowManager : WindowManager = mContext?.getSystemService(Context.WINDOW_SERVICE) as WindowManager
+        val windowManager : WindowManager = mContext?.getSystemService(Context.WINDOW_SERVICE) as WindowManager
 
-        windowManager.defaultDisplay.getMetrics(metrics)
-        MainActivity.mScreenDensity = metrics.densityDpi
+        windowManager?.defaultDisplay.getMetrics(metrics)
+
+        MDScreenRecorder.mScreenDensity = metrics.densityDpi
+
         mProjectionManager = mContext?.getSystemService(Context.MEDIA_PROJECTION_SERVICE) as MediaProjectionManager
+
+       if(mProjectionManager != null && metrics != null) {
+            isError = 0
+       } else {
+           isError = 1
+       }
+
+       return isError
+
     }
 
-     private fun prepareMediaRecorder(): Boolean {
+    private fun setupMediaRecoder() : Int {
+        var isError = 0
 
+        // It has to make public variables
         mMediaRecorder = MediaRecorder()
         mMediaRecorder?.setAudioSource(MediaRecorder.AudioSource.MIC)
         mMediaRecorder?.setVideoSource(MediaRecorder.VideoSource.SURFACE)
@@ -78,22 +96,24 @@ class MDScreenRecorder(mediaType: MediaType,
         mMediaRecorder?.setVideoEncodingBitRate(512 * 1000)
         mMediaRecorder?.setVideoFrameRate(30)
         mMediaRecorder?.setVideoSize(
-                DISPLAY_WIDTH,
-                DISPLAY_HEIGHT
+            MDScreenRecorder.DISPLAY_WIDTH,
+            MDScreenRecorder.DISPLAY_HEIGHT
         )
 
-        
-        //mMediaRecorder?.setOutputFile(mLatestFilepath)
+        // It has to make public variables
 
         try {
             mMediaRecorder?.prepare()
+            isError = 0
         } catch (e: IOException) {
             mMediaRecorder = null
-            return false
+            isError = 1
         }
 
-        return true
+        return isError
     }
+
+
 
     private fun createVirtualDisplay(): VirtualDisplay? {
         return mMediaProjection?.createVirtualDisplay(
