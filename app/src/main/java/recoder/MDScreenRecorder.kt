@@ -130,14 +130,22 @@ class MDScreenRecorder(mediaType: MediaType,
         )
     }
 
+
     override fun setupRecoder(): Int {
-        Log.d("Derrick" , "setupRecoder")
-        return 0
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        var isError = 0
+
+        return isError
     }
 
     override fun startRecoder(): Int {
-        Log.d("Derrick" , "startRecoder")
-        return 0
+        var isError = 0
+
+        return isError
+    }
+
+    override fun prepareRecoder(): Int {
+        var isError = 0
+
+        return isError
     }
 }

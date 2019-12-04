@@ -17,13 +17,11 @@ abstract class ScreenRecorder(recoderType: RecorderType,context: Context ,record
 
 
 
-    override fun toString(): String {
-        return "Recoder Type - $recoderType located "
-    }
-
     abstract fun setupRecoder(): Int
 
     abstract fun startRecoder(): Int
+
+    abstract fun prepareRecoder(): Int
 
 
 

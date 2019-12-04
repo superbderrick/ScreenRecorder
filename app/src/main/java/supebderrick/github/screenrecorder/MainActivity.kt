@@ -137,7 +137,7 @@ class MainActivity : AppCompatActivity() {
             return
         }
 
-        mVirtualDisplay = createVirtualDisplay()
+        mVirtualDisplay = requestVTDisplay()
 
 
     }
@@ -205,7 +205,7 @@ class MainActivity : AppCompatActivity() {
         return true
     }
 
-    private fun createVirtualDisplay(): VirtualDisplay? {
+    private fun requestVTDisplay(): VirtualDisplay? {
         return mMediaProjection?.createVirtualDisplay(
                 "MainActivity",
                 DISPLAY_WIDTH,
@@ -247,7 +247,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun startRecording() {
-        mVirtualDisplay = createVirtualDisplay()
+        mVirtualDisplay = requestVTDisplay()
 
         try {
             mMediaRecorder?.start()
