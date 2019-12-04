@@ -138,7 +138,6 @@ class MainActivity : AppCompatActivity() {
         mVirtualDisplay = createVirtualDisplay()
 
 
-
     }
 
     private fun showDialogPermission() {
