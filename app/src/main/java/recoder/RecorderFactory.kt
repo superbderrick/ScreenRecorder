@@ -4,11 +4,12 @@ import android.content.Context
 
 
 class RecorderFactory {
-    fun buildRecoder(type: RecorderType , context: Context): ScreenRecorder? {
+    fun buildRecoder(type: RecorderType , context: Context,filePath:String?): ScreenRecorder? {
         var screenRecorder: ScreenRecorder? = null
 
         when (type) {
-            RecorderType.MEDIAPROTECTION -> screenRecorder = ScreenRecoderFactory.buildRecoder(type,context)
+            RecorderType.MEDIAPROTECTION -> screenRecorder =
+                filePath?.let { ScreenRecoderFactory.buildRecoder(type,context, it) }
 
         }
 

@@ -3,25 +3,28 @@ package recoder
 import android.content.Context
 
 
-abstract class ScreenRecorder(recoderType: RecorderType,context: Context) {
+abstract class ScreenRecorder(recoderType: RecorderType,context: Context ,recordFilePath : String) {
 
     var recoderType: RecorderType? = null
     var context: Context? = null
+    var filePath: String? = null
 
     init {
         this.recoderType = recoderType
         this.context = context
+        this.filePath = recordFilePath
     }
 
-    abstract fun construct()
+
 
     override fun toString(): String {
         return "Recoder Type - $recoderType located "
     }
 
-    fun setupRecoder(): Int {
-        return 0
-    }
+    abstract fun setupRecoder(): Int
+
+    abstract fun startRecoder(): Int
+
 
 
 }

@@ -62,9 +62,11 @@ class MainActivity : AppCompatActivity() {
 
         checkPermissions()
 
-        val mpRecorder = RecorderFactory().buildRecoder(RecorderType.MEDIAPROTECTION ,this)
+        mLatestFilepath = Utills.getFilePath(this)
 
+        val mpRecorder = RecorderFactory().buildRecoder(RecorderType.MEDIAPROTECTION ,this,mLatestFilepath)
         mpRecorder?.setupRecoder()
+        mpRecorder?.startRecoder()
 
     }
 

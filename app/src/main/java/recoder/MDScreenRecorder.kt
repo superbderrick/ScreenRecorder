@@ -17,7 +17,7 @@ import java.io.IOException
 
 
 class MDScreenRecorder(mediaType: MediaType,
-                       context: Context) : ScreenRecorder(RecorderType.MEDIAPROTECTION, context) {
+                       context: Context , filePath:String) : ScreenRecorder(RecorderType.MEDIAPROTECTION, context , filePath) {
 
     private companion object 
     {
@@ -46,12 +46,9 @@ class MDScreenRecorder(mediaType: MediaType,
 
         mContext = context
 
-        construct()
-    }
-
-    override fun construct() {
         initInternal()
     }
+
 
     private fun initInternal() {
 
@@ -86,7 +83,6 @@ class MDScreenRecorder(mediaType: MediaType,
     private fun setupMediaRecoder() : Int {
         var isError = 0
 
-        // It has to make public variables
         mMediaRecorder = MediaRecorder()
         mMediaRecorder?.setAudioSource(MediaRecorder.AudioSource.MIC)
         mMediaRecorder?.setVideoSource(MediaRecorder.VideoSource.SURFACE)
@@ -132,5 +128,16 @@ class MDScreenRecorder(mediaType: MediaType,
             mProjectionManager?.createScreenCaptureIntent(),
             MDScreenRecorder.PERMISSION_CODE
         )
+    }
+
+    override fun setupRecoder(): Int {
+        Log.d("Derrick" , "setupRecoder")
+        return 0
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    override fun startRecoder(): Int {
+        Log.d("Derrick" , "startRecoder")
+        return 0
     }
 }

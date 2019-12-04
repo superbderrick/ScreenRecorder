@@ -3,10 +3,10 @@ package recoder
 import android.content.Context
 
 internal object ScreenRecoderFactory {
-    fun buildRecoder(model: RecorderType ,context: Context): ScreenRecorder? {
+    fun buildRecoder(type: RecorderType ,context: Context , filePath:String): ScreenRecorder? {
         var screenRecorder: ScreenRecorder? = null
-        when (model) {
-            RecorderType.MEDIAPROTECTION -> screenRecorder = MDScreenRecorder(MediaType.VIDEOONLY,context)
+        when (type) {
+            RecorderType.MEDIAPROTECTION -> screenRecorder = MDScreenRecorder(MediaType.VIDEOONLY,context,filePath)
 
             else -> {
             }
