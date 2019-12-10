@@ -17,4 +17,5 @@
     <string name="start_record_fail">Unable to start record</string>
     <string name="stop_record_success">Stop recording screen success</string>
     <string name="stop_record_fail">Stop recording screen failed</string>
+    <string name="title_activity_main2">Main2Activity</string>
 </resources>

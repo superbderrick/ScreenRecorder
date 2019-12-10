@@ -21,7 +21,7 @@ class MDScreenRecorder(mediaType: MediaType,
 
     private companion object 
     {
-        const val TAG = "screenRecoder"
+        const val LOG_TAG = "screenRecoder"
         const val LIST_ITEM_REQUEST_CODE = 101
         const val PERMISSION_CODE = 1
         const val DISPLAY_WIDTH = 480
@@ -37,6 +37,7 @@ class MDScreenRecorder(mediaType: MediaType,
 
     private var mMediaRecorder: MediaRecorder? = null
     private var mContext: Context? = null
+    private var mFilePath: String? = null
     private var mProjectionManager: MediaProjectionManager? = null
     private var mMediaProjection: MediaProjection? = null
     private var mVirtualDisplay: VirtualDisplay? = null
@@ -45,6 +46,7 @@ class MDScreenRecorder(mediaType: MediaType,
     init {
 
         mContext = context
+        mFilePath = filePath
 
         initInternal()
     }
@@ -53,8 +55,6 @@ class MDScreenRecorder(mediaType: MediaType,
     private fun initInternal() {
 
         var errorForWindow = setupWindowDisPlay()
-
-        var errorForMediaRecoder = setupMediaRecoder()
 
     }
 
@@ -71,6 +71,7 @@ class MDScreenRecorder(mediaType: MediaType,
         mProjectionManager = mContext?.getSystemService(Context.MEDIA_PROJECTION_SERVICE) as MediaProjectionManager
 
        if(mProjectionManager != null && metrics != null) {
+
             isError = 0
        } else {
            isError = 1
@@ -96,7 +97,6 @@ class MDScreenRecorder(mediaType: MediaType,
             MDScreenRecorder.DISPLAY_HEIGHT
         )
 
-        // It has to make public variables
 
         try {
             mMediaRecorder?.prepare()
@@ -132,7 +132,10 @@ class MDScreenRecorder(mediaType: MediaType,
 
 
     override fun setupRecoder(): Int {
+        Log.d(LOG_TAG , "setupRecoder")
         var isError = 0
+
+        isError = setupMediaRecoder()
 
         return isError
     }
@@ -143,9 +146,4 @@ class MDScreenRecorder(mediaType: MediaType,
         return isError
     }
 
-    override fun prepareRecoder(): Int {
-        var isError = 0
-
-        return isError
-    }
 }

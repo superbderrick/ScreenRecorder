@@ -68,6 +68,7 @@ class MainActivity : AppCompatActivity() {
         mpRecorder?.setupRecoder()
         mpRecorder?.startRecoder()
 
+
     }
 
     private fun setupGUIComponents() {

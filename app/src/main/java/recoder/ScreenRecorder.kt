@@ -21,7 +21,6 @@ abstract class ScreenRecorder(recoderType: RecorderType,context: Context ,record
 
     abstract fun startRecoder(): Int
 
-    abstract fun prepareRecoder(): Int
 
 
 
