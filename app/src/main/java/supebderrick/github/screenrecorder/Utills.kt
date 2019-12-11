@@ -1,5 +1,7 @@
 package supebderrick.github.screenrecorder
 
+import android.app.Activity
+import android.app.AlertDialog
 import android.content.Context
 import android.content.pm.PackageManager
 import android.os.Environment
@@ -39,6 +41,19 @@ class Utills {
                 return null
             }
             return filePath
+        }
+
+         fun showDialogPermission(context: Context) {
+            val builder = AlertDialog.Builder(context)
+            builder.setTitle(R.string.permission_denied)
+            builder.setMessage(R.string.permission_denied_message)
+
+            builder.setPositiveButton("OK") { _, _ ->
+                (context as Activity).finish()
+            }
+
+            val dialog: AlertDialog = builder.create()
+            dialog.show()
         }
     }
 }

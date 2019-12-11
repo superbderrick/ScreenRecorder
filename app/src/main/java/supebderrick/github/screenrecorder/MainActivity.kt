@@ -140,20 +140,6 @@ class MainActivity : AppCompatActivity() {
 
         mVirtualDisplay = requestVTDisplay()
 
-
-    }
-
-    private fun showDialogPermission() {
-        val builder = AlertDialog.Builder(this@MainActivity)
-        builder.setTitle(R.string.permission_denied)
-        builder.setMessage(R.string.permission_denied_message)
-
-        builder.setPositiveButton("OK") { _, _ ->
-            finish()
-        }
-
-        val dialog: AlertDialog = builder.create()
-        dialog.show()
     }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissionsList: Array<String>, grantResults: IntArray) {
@@ -168,7 +154,7 @@ class MainActivity : AppCompatActivity() {
                     }
 
                     if (permissionsDenied > 0) {
-                        showDialogPermission()
+                        Utills.showDialogPermission(this)
                     }
                 }
                 return
@@ -231,7 +217,7 @@ class MainActivity : AppCompatActivity() {
                     getString(R.string.screen_cast_denied), Toast.LENGTH_SHORT
             ).show()
 
-            showDialogPermission()
+            Utills.showDialogPermission(this)
             return
         }
 
