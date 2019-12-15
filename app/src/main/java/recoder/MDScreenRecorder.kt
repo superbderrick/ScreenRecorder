@@ -168,6 +168,8 @@ class MDScreenRecorder(mediaType: MediaType,
     override fun stopRecoder(): Int {
         var isError = 0
 
+        stopRecordingScreen()
+
         return isError
     }
 
@@ -208,6 +210,27 @@ class MDScreenRecorder(mediaType: MediaType,
             DisplayManager.VIRTUAL_DISPLAY_FLAG_AUTO_MIRROR,
             mMediaRecorder?.surface, null /*Handler*/, null
         )
+    }
+
+    private fun stopRecordingScreen() {
+        try {
+            mMediaRecorder?.stop()
+        } catch (e: Exception) {
+
+        } finally {
+            mMediaRecorder?.release()
+            mMediaRecorder = null
+        }
+
+        try {
+            mMediaProjection?.stop()
+            mVirtualDisplay?.release()
+        } catch (e: java.lang.Exception) {
+
+        } finally {
+            mMediaProjection = null
+            mVirtualDisplay = null
+        }
     }
 
 
