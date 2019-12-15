@@ -18,8 +18,6 @@ import android.util.Log
 import android.widget.Button
 import android.widget.Toast
 import androidx.core.app.ActivityCompat
-import recoder.RecorderFactory
-import recoder.RecorderType
 import java.io.IOException
 
 class MainActivity : AppCompatActivity() {
@@ -63,11 +61,6 @@ class MainActivity : AppCompatActivity() {
         checkPermissions()
 
         mLatestFilepath = Utills.getFilePath(this)
-
-        val mpRecorder = RecorderFactory().buildRecoder(RecorderType.MEDIAPROTECTION ,this,mLatestFilepath)
-        mpRecorder?.setupRecoder()
-        mpRecorder?.startRecoder()
-
 
     }
 

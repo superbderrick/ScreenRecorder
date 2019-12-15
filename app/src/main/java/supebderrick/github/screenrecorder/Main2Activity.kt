@@ -15,6 +15,8 @@ import recoder.ScreenRecorder
 
 class Main2Activity : AppCompatActivity() {
 
+     val LOGTAG = "Main2Activity"
+
     private var mLatestFilepath: String? = null
     private var mRecoder: ScreenRecorder? = null
 
@@ -30,6 +32,11 @@ class Main2Activity : AppCompatActivity() {
 
         mRecoder = RecorderFactory().buildRecoder(RecorderType.MEDIAPROTECTION ,this,mLatestFilepath)
 
+        var setupResultValue:Int = mRecoder!!.setupRecoder()
+        var startResultValue:Int = mRecoder!!.startRecoder()
+
+        Log.d(LOGTAG , "resultValue : $setupResultValue")
+        Log.d(LOGTAG , "startValue : $startResultValue")
 
     }
 
@@ -47,14 +54,15 @@ class Main2Activity : AppCompatActivity() {
     }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissionsList: Array<String>, grantResults: IntArray) {
-        //test
-        Log.d("Derrick" , "test")
+        Log.d(LOGTAG , "onRequestPermissionsResult")
     }
 
     public override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        Log.d("Derrick" , "test")
-        //test
+
+        mRecoder!!.onActivityResult(requestCode,resultCode,data)
+
+        Log.d(LOGTAG , "onRequestPermissionsResult")
     }
 
 }

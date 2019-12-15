@@ -1,7 +1,9 @@
 package recoder
 
+import android.Manifest
 import android.app.Activity
 import android.content.Context
+import android.content.Intent
 import android.hardware.display.DisplayManager
 import android.hardware.display.VirtualDisplay
 import android.media.MediaRecorder
@@ -10,9 +12,11 @@ import android.media.projection.MediaProjectionManager
 import android.util.DisplayMetrics
 import android.util.Log
 import android.view.WindowManager
+import android.widget.Toast
 import androidx.core.app.ActivityCompat.startActivityForResult
 import supebderrick.github.screenrecorder.MainActivity
 import supebderrick.github.screenrecorder.R
+import supebderrick.github.screenrecorder.Utills
 import java.io.IOException
 
 
@@ -21,7 +25,7 @@ class MDScreenRecorder(mediaType: MediaType,
 
     private companion object 
     {
-        const val LOG_TAG = "screenRecoder"
+        const val LOG_TAG = "MDScreenRecorder"
         const val LIST_ITEM_REQUEST_CODE = 101
         const val PERMISSION_CODE = 1
         const val DISPLAY_WIDTH = 480
@@ -41,6 +45,7 @@ class MDScreenRecorder(mediaType: MediaType,
     private var mProjectionManager: MediaProjectionManager? = null
     private var mMediaProjection: MediaProjection? = null
     private var mVirtualDisplay: VirtualDisplay? = null
+    private lateinit var mMediaProjectionCallback: MDScreenRecorder.MediaProjectionCallback
     
 
     init {
@@ -53,9 +58,7 @@ class MDScreenRecorder(mediaType: MediaType,
 
 
     private fun initInternal() {
-
         var errorForWindow = setupWindowDisPlay()
-
     }
 
     private fun setupWindowDisPlay() : Int {
@@ -72,7 +75,7 @@ class MDScreenRecorder(mediaType: MediaType,
 
        if(mProjectionManager != null && metrics != null) {
 
-            isError = 0
+           isError = 0
        } else {
            isError = 1
        }
@@ -97,11 +100,13 @@ class MDScreenRecorder(mediaType: MediaType,
             MDScreenRecorder.DISPLAY_HEIGHT
         )
 
+        mMediaRecorder?.setOutputFile(mFilePath)
 
         try {
             mMediaRecorder?.prepare()
             isError = 0
         } catch (e: IOException) {
+            Log.d(LOG_TAG , "MediaRecoder failure ${e.message} " )
             mMediaRecorder = null
             isError = 1
         }
@@ -124,18 +129,30 @@ class MDScreenRecorder(mediaType: MediaType,
 
     private fun requestStartRecordingScreen() {
 
-        (mContext as MainActivity).startActivityForResult(
+        (mContext as Activity).startActivityForResult(
             mProjectionManager?.createScreenCaptureIntent(),
             MDScreenRecorder.PERMISSION_CODE
         )
     }
 
+    private fun initializeMediaProjection(resultCode: Int, data: Intent) {
+        mMediaProjectionCallback = MediaProjectionCallback()
+
+        mMediaProjection = mProjectionManager?.getMediaProjection(resultCode, data)
+        mMediaProjection?.registerCallback(mMediaProjectionCallback, null)
+    }
+
 
     override fun setupRecoder(): Int {
-        Log.d(LOG_TAG , "setupRecoder")
-        var isError = 0
+        var isError = 1
 
-        isError = setupMediaRecoder()
+        if(mContext?.let {
+                RecoderUtills.hasPermissions(
+                    it, Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                    Manifest.permission.RECORD_AUDIO)
+            }!!) {
+            isError = setupMediaRecoder()
+        }
 
         return isError
     }
@@ -143,7 +160,62 @@ class MDScreenRecorder(mediaType: MediaType,
     override fun startRecoder(): Int {
         var isError = 0
 
+        requestStartRecordingScreen()
+
         return isError
     }
 
+    override fun stopRecoder(): Int {
+        var isError = 0
+
+        return isError
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+
+        if (requestCode != MDScreenRecorder.PERMISSION_CODE) {
+            Log.e(MDScreenRecorder.LOG_TAG, "Unknown request code: $requestCode")
+            return
+        }
+
+        if (resultCode != Activity.RESULT_OK) {
+
+            return
+        }
+
+        initializeMediaProjection(resultCode, data!!)
+
+        startRecording()
+
+    }
+
+    private fun startRecording() {
+        mVirtualDisplay = requestVTDisplay()
+
+        try {
+            mMediaRecorder?.start()
+        } catch (e: RuntimeException) {
+
+        }
+    }
+
+    private fun requestVTDisplay(): VirtualDisplay? {
+        return mMediaProjection?.createVirtualDisplay(
+            "MDScreenRecorder",
+            MDScreenRecorder.DISPLAY_WIDTH,
+            MDScreenRecorder.DISPLAY_HEIGHT,
+            MDScreenRecorder.mScreenDensity,
+            DisplayManager.VIRTUAL_DISPLAY_FLAG_AUTO_MIRROR,
+            mMediaRecorder?.surface, null /*Handler*/, null
+        )
+    }
+
+
+    private inner class MediaProjectionCallback : MediaProjection.Callback() {
+        override fun onStop() {
+
+        }
+    }
+
 }
+
