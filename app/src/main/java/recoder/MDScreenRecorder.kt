@@ -12,11 +12,6 @@ import android.media.projection.MediaProjectionManager
 import android.util.DisplayMetrics
 import android.util.Log
 import android.view.WindowManager
-import android.widget.Toast
-import androidx.core.app.ActivityCompat.startActivityForResult
-import supebderrick.github.screenrecorder.MainActivity
-import supebderrick.github.screenrecorder.R
-import supebderrick.github.screenrecorder.Utills
 import java.io.IOException
 
 
