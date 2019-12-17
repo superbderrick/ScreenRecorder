@@ -44,7 +44,7 @@ class MainActivity : AppCompatActivity() {
 
         mRecorder = RecorderFactory().buildRecoder(RecorderType.MEDIAPROTECTION ,this,mLatestFilepath)
 
-        errorCode = mRecorder?.setupRecoder()
+        errorCode = mRecorder?.setupRecorder()
 
         Log.d(LOG_TAG , "onCreate is called tried to setup a recorder ")
 
@@ -63,11 +63,11 @@ class MainActivity : AppCompatActivity() {
         stopButton = findViewById(R.id.stopButton)
 
         recordingButton.setOnClickListener {
-            var startResultValue:Int? = mRecorder?.startRecoder()
+            var startResultValue:Int? = mRecorder?.startRecorder()
         }
 
         stopButton.setOnClickListener {
-            var stopResultValue:Int? = mRecorder?.stopRecoder()
+            var stopResultValue:Int? = mRecorder?.stopRecorder()
         }
 
     }

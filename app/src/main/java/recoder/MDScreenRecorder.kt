@@ -163,15 +163,17 @@ class MDScreenRecorder(mediaType: MediaType,
     }
 
 
-    override fun setupRecoder(): Int {
+    override fun setupRecorder(): Int {
         var isError = 0
 
         isError = initInternal()
 
+        Log.d(LOG_TAG , "setupRecorder after init Internal :  $isError")
+
         return isError
     }
 
-    override fun startRecoder(): Int {
+    override fun startRecorder(): Int {
         var isError = 0
 
         requestStartRecordingScreen()
@@ -179,7 +181,7 @@ class MDScreenRecorder(mediaType: MediaType,
         return isError
     }
 
-    override fun stopRecoder(): Int {
+    override fun stopRecorder(): Int {
         var isError = 0
 
         stopRecordingScreen()

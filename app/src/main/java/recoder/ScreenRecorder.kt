@@ -17,11 +17,11 @@ abstract class ScreenRecorder(recoderType: RecorderType,context: Context ,record
     }
 
 
-    abstract fun setupRecoder(): Int
+    abstract fun setupRecorder(): Int
 
-    abstract fun startRecoder(): Int
+    abstract fun startRecorder(): Int
 
-    abstract fun stopRecoder(): Int
+    abstract fun stopRecorder(): Int
 
     abstract fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?)
 
