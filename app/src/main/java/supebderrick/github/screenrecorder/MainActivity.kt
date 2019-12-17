@@ -3,6 +3,7 @@ package supebderrick.github.screenrecorder
 import android.Manifest
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.widget.Button
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
@@ -21,6 +22,7 @@ class MainActivity : AppCompatActivity() {
             android.Manifest.permission.WRITE_EXTERNAL_STORAGE,
             android.Manifest.permission.RECORD_AUDIO
         )
+        var errorCode : Int? = null
     }
 
     private lateinit var recordingButton : Button
@@ -28,7 +30,7 @@ class MainActivity : AppCompatActivity() {
 
 
     private var mLatestFilepath: String? = null
-    private var mRecoder: ScreenRecorder? = null
+    private var mRecorder: ScreenRecorder? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -40,9 +42,33 @@ class MainActivity : AppCompatActivity() {
 
         checkPermissions()
 
-        mRecoder = RecorderFactory().buildRecoder(RecorderType.MEDIAPROTECTION ,this,mLatestFilepath)
+        mRecorder = RecorderFactory().buildRecoder(RecorderType.MEDIAPROTECTION ,this,mLatestFilepath)
 
-        var setupResultValue: Int? = mRecoder?.setupRecoder()
+        errorCode = mRecorder?.setupRecoder()
+
+        Log.d(LOG_TAG , "onCreate is called tried to setup a recorder ")
+
+    }
+
+
+    public override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+
+        mRecorder?.onActivityResult(requestCode,resultCode,data)
+
+    }
+
+    private fun setGUIComponents() {
+        recordingButton = findViewById(R.id.recordingButton)
+        stopButton = findViewById(R.id.stopButton)
+
+        recordingButton.setOnClickListener {
+            var startResultValue:Int? = mRecorder?.startRecoder()
+        }
+
+        stopButton.setOnClickListener {
+            var stopResultValue:Int? = mRecorder?.stopRecoder()
+        }
 
     }
 
@@ -56,27 +82,6 @@ class MainActivity : AppCompatActivity() {
                 MainActivity.PERMISSION_ALL
             )
         }
-
-    }
-
-    private fun setGUIComponents() {
-        recordingButton = findViewById(R.id.recordingButton)
-        stopButton = findViewById(R.id.stopButton)
-
-        recordingButton.setOnClickListener {
-            var startResultValue:Int? = mRecoder?.startRecoder()
-        }
-
-        stopButton.setOnClickListener {
-            var stopResultValue:Int? = mRecoder?.stopRecoder()
-        }
-
-    }
-
-    public override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-
-        mRecoder?.onActivityResult(requestCode,resultCode,data)
 
     }
 }

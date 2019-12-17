@@ -21,17 +21,10 @@ class MDScreenRecorder(mediaType: MediaType,
     private companion object 
     {
         const val LOG_TAG = "MDScreenRecorder"
-        const val LIST_ITEM_REQUEST_CODE = 101
         const val PERMISSION_CODE = 1
         const val DISPLAY_WIDTH = 480
         const val DISPLAY_HEIGHT = 640
-        var mScreenDensity: Int = 0
-        var PERMISSION_ALL = 1
-
-        var PERMISSIONS = arrayOf(
-            android.Manifest.permission.WRITE_EXTERNAL_STORAGE,
-            android.Manifest.permission.RECORD_AUDIO
-        )
+        var SCREEN_DENSITY: Int = 0
     }
 
     private var mMediaRecorder: MediaRecorder? = null
@@ -44,83 +37,12 @@ class MDScreenRecorder(mediaType: MediaType,
     
 
     init {
-
         mContext = context
         mFilePath = filePath
 
-        initInternal()
+        Log.d(LOG_TAG , "Constructor is called ")
     }
 
-
-    private fun initInternal() {
-        var errorForWindow = setupWindowDisPlay()
-    }
-
-    private fun setupWindowDisPlay() : Int {
-        var isError = 0
-
-        val metrics = DisplayMetrics()
-        val windowManager : WindowManager = mContext?.getSystemService(Context.WINDOW_SERVICE) as WindowManager
-
-        windowManager?.defaultDisplay.getMetrics(metrics)
-
-        MDScreenRecorder.mScreenDensity = metrics.densityDpi
-
-        mProjectionManager = mContext?.getSystemService(Context.MEDIA_PROJECTION_SERVICE) as MediaProjectionManager
-
-       if(mProjectionManager != null && metrics != null) {
-
-           isError = 0
-       } else {
-           isError = 1
-       }
-
-       return isError
-
-    }
-
-    private fun setupMediaRecoder() : Int {
-        var isError = 0
-
-        mMediaRecorder = MediaRecorder()
-        mMediaRecorder?.setAudioSource(MediaRecorder.AudioSource.MIC)
-        mMediaRecorder?.setVideoSource(MediaRecorder.VideoSource.SURFACE)
-        mMediaRecorder?.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4)
-        mMediaRecorder?.setVideoEncoder(MediaRecorder.VideoEncoder.H264)
-        mMediaRecorder?.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB)
-        mMediaRecorder?.setVideoEncodingBitRate(512 * 1000)
-        mMediaRecorder?.setVideoFrameRate(30)
-        mMediaRecorder?.setVideoSize(
-            MDScreenRecorder.DISPLAY_WIDTH,
-            MDScreenRecorder.DISPLAY_HEIGHT
-        )
-
-        mMediaRecorder?.setOutputFile(mFilePath)
-
-        try {
-            mMediaRecorder?.prepare()
-            isError = 0
-        } catch (e: IOException) {
-            Log.d(LOG_TAG , "MediaRecoder failure ${e.message} " )
-            mMediaRecorder = null
-            isError = 1
-        }
-
-        return isError
-    }
-
-
-
-    private fun createVirtualDisplay(): VirtualDisplay? {
-        return mMediaProjection?.createVirtualDisplay(
-            "MainActivity",
-            MDScreenRecorder.DISPLAY_WIDTH,
-            MDScreenRecorder.DISPLAY_HEIGHT,
-            MDScreenRecorder.mScreenDensity,
-            DisplayManager.VIRTUAL_DISPLAY_FLAG_AUTO_MIRROR,
-            mMediaRecorder?.surface, null /*Handler*/, null
-        )
-    }
 
     private fun requestStartRecordingScreen() {
 
@@ -137,17 +59,114 @@ class MDScreenRecorder(mediaType: MediaType,
         mMediaProjection?.registerCallback(mMediaProjectionCallback, null)
     }
 
+    private fun initInternal() : Int {
+        var isError = 0
 
-    override fun setupRecoder(): Int {
-        var isError = 1
+        isError = checkFilePathAndContext()
+
+        isError = setupWindowDisPlay()
+
+        isError = checkPermissions()
+
+        isError = setupMediaRecorder()
+
+        return isError
+    }
+
+    private fun checkFilePathAndContext() :Int {
+        var isError = 0
+
+        if(mFilePath == null) {
+            isError = 1
+        }
+
+        if(mContext == null) {
+            isError = 1
+        }
+
+        return  isError
+    }
+
+    private fun setupWindowDisPlay() : Int {
+        var isError = 0
+
+        val metrics = DisplayMetrics()
+        val windowManager : WindowManager = mContext?.getSystemService(Context.WINDOW_SERVICE) as WindowManager
+
+        windowManager?.defaultDisplay.getMetrics(metrics)
+
+        MDScreenRecorder.SCREEN_DENSITY = metrics.densityDpi
+
+        mProjectionManager = mContext?.getSystemService(Context.MEDIA_PROJECTION_SERVICE) as MediaProjectionManager
+
+        if(mProjectionManager != null && metrics != null) {
+
+            isError = 0
+        } else {
+            isError = 1
+        }
+
+        return isError
+
+    }
+
+    private fun checkPermissions() :Int {
+        var isError = 0
 
         if(mContext?.let {
                 RecoderUtills.hasPermissions(
                     it, Manifest.permission.WRITE_EXTERNAL_STORAGE,
                     Manifest.permission.RECORD_AUDIO)
-            }!!) {
-            isError = setupMediaRecoder()
+            }!!)
+        {
+            isError = 0
+        } else {
+            isError = 1
         }
+
+        return isError
+    }
+
+    private fun setupMediaRecorder() : Int {
+        var isError = 0
+
+        if(mFilePath != null) {
+            mMediaRecorder = MediaRecorder()
+            mMediaRecorder?.setAudioSource(MediaRecorder.AudioSource.MIC)
+            mMediaRecorder?.setVideoSource(MediaRecorder.VideoSource.SURFACE)
+            mMediaRecorder?.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4)
+            mMediaRecorder?.setVideoEncoder(MediaRecorder.VideoEncoder.H264)
+            mMediaRecorder?.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB)
+            mMediaRecorder?.setVideoEncodingBitRate(512 * 1000)
+            mMediaRecorder?.setVideoFrameRate(30)
+            mMediaRecorder?.setVideoSize(
+                MDScreenRecorder.DISPLAY_WIDTH,
+                MDScreenRecorder.DISPLAY_HEIGHT
+            )
+
+            mMediaRecorder?.setOutputFile(mFilePath)
+
+            try {
+                mMediaRecorder?.prepare()
+                isError = 0
+            } catch (e: IOException) {
+                Log.d(LOG_TAG , "MediaRecoder failure ${e.message} " )
+                mMediaRecorder = null
+                isError = 1
+            }
+
+        } else {
+            isError = 1
+        }
+
+        return isError
+    }
+
+
+    override fun setupRecoder(): Int {
+        var isError = 0
+
+        isError = initInternal()
 
         return isError
     }
@@ -201,7 +220,7 @@ class MDScreenRecorder(mediaType: MediaType,
             "MDScreenRecorder",
             MDScreenRecorder.DISPLAY_WIDTH,
             MDScreenRecorder.DISPLAY_HEIGHT,
-            MDScreenRecorder.mScreenDensity,
+            MDScreenRecorder.SCREEN_DENSITY,
             DisplayManager.VIRTUAL_DISPLAY_FLAG_AUTO_MIRROR,
             mMediaRecorder?.surface, null /*Handler*/, null
         )
