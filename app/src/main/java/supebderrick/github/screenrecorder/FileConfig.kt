@@ -1,6 +1,6 @@
 package supebderrick.github.screenrecorder
 
-class RecoderConfig {
+class FileConfig {
     companion object {
         const val FOLDER_NAME = "screenrecorder"
         const val NAME_PREFIX = "record_"

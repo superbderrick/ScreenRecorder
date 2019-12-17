@@ -7,9 +7,9 @@ import android.content.pm.PackageManager
 import android.os.Environment
 import android.widget.Toast
 import androidx.core.app.ActivityCompat
-import supebderrick.github.screenrecorder.RecoderConfig.Companion.FOLDER_NAME
-import supebderrick.github.screenrecorder.RecoderConfig.Companion.NAME_PREFIX
-import supebderrick.github.screenrecorder.RecoderConfig.Companion.OUTPUT_EXT
+import supebderrick.github.screenrecorder.FileConfig.Companion.FOLDER_NAME
+import supebderrick.github.screenrecorder.FileConfig.Companion.NAME_PREFIX
+import supebderrick.github.screenrecorder.FileConfig.Companion.OUTPUT_EXT
 import java.io.File
 import java.text.SimpleDateFormat
 import java.util.*

@@ -46,7 +46,7 @@ class MainActivity : AppCompatActivity() {
 
         errorCode = mRecorder?.setupRecorder()
 
-        Log.d(LOG_TAG , "onCreate is called tried to setup a recorder ")
+        Log.d(LOG_TAG , "onCreate is called tried to setup a recorder with result :  $errorCode ")
 
     }
 

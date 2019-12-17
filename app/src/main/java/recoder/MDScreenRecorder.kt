@@ -21,10 +21,7 @@ class MDScreenRecorder(mediaType: MediaType,
     private companion object 
     {
         const val LOG_TAG = "MDScreenRecorder"
-        const val PERMISSION_CODE = 1
-        const val DISPLAY_WIDTH = 480
-        const val DISPLAY_HEIGHT = 640
-        var SCREEN_DENSITY: Int = 0
+
     }
 
     private var mMediaRecorder: MediaRecorder? = null
@@ -34,6 +31,8 @@ class MDScreenRecorder(mediaType: MediaType,
     private var mMediaProjection: MediaProjection? = null
     private var mVirtualDisplay: VirtualDisplay? = null
     private lateinit var mMediaProjectionCallback: MDScreenRecorder.MediaProjectionCallback
+
+    private var mScreenDencity: Int = 0
     
 
     init {
@@ -64,11 +63,25 @@ class MDScreenRecorder(mediaType: MediaType,
 
         isError = checkFilePathAndContext()
 
+        if(isError == 1)
+            return isError
+
         isError = setupWindowDisPlay()
 
+        if(isError == 1)
+            return isError
+
         isError = checkPermissions()
+        if(isError == 1)
+
+            return isError
 
         isError = setupMediaRecorder()
+
+        if(isError == 1)
+            return isError
+
+        Log.d(LOG_TAG , "InitInternal done with Result :  $isError ")
 
         return isError
     }
@@ -84,6 +97,8 @@ class MDScreenRecorder(mediaType: MediaType,
             isError = 1
         }
 
+        Log.d(LOG_TAG , "checkFilePathAndContext done with Result :  $isError ")
+
         return  isError
     }
 
@@ -95,7 +110,7 @@ class MDScreenRecorder(mediaType: MediaType,
 
         windowManager?.defaultDisplay.getMetrics(metrics)
 
-        MDScreenRecorder.SCREEN_DENSITY = metrics.densityDpi
+        mScreenDencity = metrics.densityDpi
 
         mProjectionManager = mContext?.getSystemService(Context.MEDIA_PROJECTION_SERVICE) as MediaProjectionManager
 
@@ -105,6 +120,8 @@ class MDScreenRecorder(mediaType: MediaType,
         } else {
             isError = 1
         }
+
+        Log.d(LOG_TAG , "setupWindowDisPlay done with Result :  $isError ")
 
         return isError
 
@@ -124,6 +141,8 @@ class MDScreenRecorder(mediaType: MediaType,
             isError = 1
         }
 
+        Log.d(LOG_TAG , "checkPermissions done with Result :  $isError ")
+
         return isError
     }
 
@@ -140,8 +159,8 @@ class MDScreenRecorder(mediaType: MediaType,
             mMediaRecorder?.setVideoEncodingBitRate(512 * 1000)
             mMediaRecorder?.setVideoFrameRate(30)
             mMediaRecorder?.setVideoSize(
-                MDScreenRecorder.DISPLAY_WIDTH,
-                MDScreenRecorder.DISPLAY_HEIGHT
+                RecorderConfig.DISPLAY_WIDTH,
+                RecorderConfig.DISPLAY_HEIGHT
             )
 
             mMediaRecorder?.setOutputFile(mFilePath)
@@ -158,6 +177,8 @@ class MDScreenRecorder(mediaType: MediaType,
         } else {
             isError = 1
         }
+
+        Log.d(LOG_TAG , "setupMediaRecorder done with Result :  $isError ")
 
         return isError
     }
@@ -191,7 +212,7 @@ class MDScreenRecorder(mediaType: MediaType,
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
 
-        if (requestCode != MDScreenRecorder.PERMISSION_CODE) {
+        if (requestCode != RecorderConfig.PERMISSION_CODE) {
             Log.e(MDScreenRecorder.LOG_TAG, "Unknown request code: $requestCode")
             return
         }
@@ -220,9 +241,9 @@ class MDScreenRecorder(mediaType: MediaType,
     private fun requestVTDisplay(): VirtualDisplay? {
         return mMediaProjection?.createVirtualDisplay(
             "MDScreenRecorder",
-            MDScreenRecorder.DISPLAY_WIDTH,
-            MDScreenRecorder.DISPLAY_HEIGHT,
-            MDScreenRecorder.SCREEN_DENSITY,
+            RecorderConfig.DISPLAY_WIDTH,
+            RecorderConfig.DISPLAY_HEIGHT,
+            mScreenDencity,
             DisplayManager.VIRTUAL_DISPLAY_FLAG_AUTO_MIRROR,
             mMediaRecorder?.surface, null /*Handler*/, null
         )
