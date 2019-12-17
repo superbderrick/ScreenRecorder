@@ -42,7 +42,7 @@ class MainActivity : AppCompatActivity() {
 
         mRecoder = RecorderFactory().buildRecoder(RecorderType.MEDIAPROTECTION ,this,mLatestFilepath)
 
-        var setupResultValue:Int = mRecoder!!.setupRecoder()
+        var setupResultValue: Int? = mRecoder?.setupRecoder()
 
     }
 
@@ -64,11 +64,11 @@ class MainActivity : AppCompatActivity() {
         stopButton = findViewById(R.id.stopButton)
 
         recordingButton.setOnClickListener {
-            var startResultValue:Int = mRecoder!!.startRecoder()
+            var startResultValue:Int? = mRecoder?.startRecoder()
         }
 
         stopButton.setOnClickListener {
-            var stopResultValue:Int = mRecoder!!.stopRecoder()
+            var stopResultValue:Int? = mRecoder?.stopRecoder()
         }
 
     }
@@ -76,7 +76,7 @@ class MainActivity : AppCompatActivity() {
     public override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
 
-        mRecoder!!.onActivityResult(requestCode,resultCode,data)
+        mRecoder?.onActivityResult(requestCode,resultCode,data)
 
     }
 }
