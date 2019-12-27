@@ -15,7 +15,6 @@ import recoder.ScreenRecorder
 class MainActivity : AppCompatActivity() {
 
     private companion object {
-
         val LOG_TAG = "MainActivity"
         var PERMISSION_ALL = 1
         var PERMISSIONS = arrayOf(
@@ -46,6 +45,7 @@ class MainActivity : AppCompatActivity() {
 
         errorCode = mRecorder?.setupRecorder()
 
+
         Log.d(LOG_TAG , "onCreate is called tried to setup a recorder with result :  $errorCode ")
 
     }
@@ -54,8 +54,33 @@ class MainActivity : AppCompatActivity() {
     public override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
 
-        mRecorder?.onActivityResult(requestCode,resultCode,data)
+        Log.d(LOG_TAG , "onActivityResultt requestCode :  $requestCode ")
+        Log.d(LOG_TAG , "onActivityResultt resultCode :  $resultCode ")
 
+        if(requestCode == 100) {
+            if (resultCode != RESULT_OK) {
+
+                // User didn't allow to accept a permission
+                // Later need to exception code,
+
+                return;
+            }
+
+            mRecorder?.onActivityResult(requestCode,resultCode,data)
+        }
+
+
+
+    }
+
+    public override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+
+        Log.d(LOG_TAG , "onRequestPermissionsResult :   ")
     }
 
     private fun setGUIComponents() {

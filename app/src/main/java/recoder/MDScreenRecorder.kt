@@ -33,6 +33,7 @@ class MDScreenRecorder(mediaType: MediaType,
     private lateinit var mMediaProjectionCallback: MDScreenRecorder.MediaProjectionCallback
 
     private var mScreenDencity: Int = 0
+    private var isCreated: Boolean = false
     
 
     init {
@@ -44,6 +45,7 @@ class MDScreenRecorder(mediaType: MediaType,
 
 
     private fun requestStartRecordingScreen() {
+        Log.d(LOG_TAG , "requestStartRecordingScreen ")
 
         (mContext as Activity).startActivityForResult(
             mProjectionManager?.createScreenCaptureIntent(),
@@ -147,6 +149,7 @@ class MDScreenRecorder(mediaType: MediaType,
     }
 
     private fun setupMediaRecorder() : Int {
+        Log.d(LOG_TAG , "setupMediaRecorder  :  ")
         var isError = 0
 
         if(mFilePath != null) {
@@ -162,12 +165,13 @@ class MDScreenRecorder(mediaType: MediaType,
                 RecorderConfig.DISPLAY_WIDTH,
                 RecorderConfig.DISPLAY_HEIGHT
             )
-
+            
             mMediaRecorder?.setOutputFile(mFilePath)
 
             try {
                 mMediaRecorder?.prepare()
                 isError = 0
+                isCreated = true
             } catch (e: IOException) {
                 Log.d(LOG_TAG , "MediaRecoder failure ${e.message} " )
                 mMediaRecorder = null
@@ -203,6 +207,7 @@ class MDScreenRecorder(mediaType: MediaType,
     }
 
     override fun stopRecorder(): Int {
+        Log.d(LOG_TAG , "stopRecorder requestCode :   ")
         var isError = 0
 
         stopRecordingScreen()
@@ -212,29 +217,35 @@ class MDScreenRecorder(mediaType: MediaType,
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
 
+        Log.d(LOG_TAG , "onActivityResult requestCode :  $requestCode ")
+        Log.d(LOG_TAG , "onActivityResult resultCode :  $resultCode ")
+
         if (requestCode != RecorderConfig.PERMISSION_CODE) {
             Log.e(MDScreenRecorder.LOG_TAG, "Unknown request code: $requestCode")
             return
         }
 
         if (resultCode != Activity.RESULT_OK) {
-
+            // User didn't allow to accept a permission
+            // Later need to exception code,
             return
         }
 
-        initializeMediaProjection(resultCode, data!!)
 
+        initializeMediaProjection(resultCode, data!!)
         startRecording()
 
     }
 
     private fun startRecording() {
+        Log.d(LOG_TAG , "startRecording ")
         mVirtualDisplay = requestVTDisplay()
 
         try {
+            Log.d(LOG_TAG , "startRecording start ")
             mMediaRecorder?.start()
         } catch (e: RuntimeException) {
-
+            Log.d(LOG_TAG , "startRecording start eror " + e.message)
         }
     }
 
@@ -251,20 +262,25 @@ class MDScreenRecorder(mediaType: MediaType,
 
     private fun stopRecordingScreen() {
         try {
+            Log.d(LOG_TAG , "stopRecordingScreen is called  ")
             mMediaRecorder?.stop()
         } catch (e: Exception) {
-
+            Log.d(LOG_TAG , "stopRecordingScreen is called  " + e.message)
         } finally {
+            Log.d(LOG_TAG , "stopRecordingScreen is called finally  " )
             mMediaRecorder?.release()
             mMediaRecorder = null
         }
 
         try {
+            Log.d(LOG_TAG , "stopRecordingScreen sec is called finally  " )
             mMediaProjection?.stop()
             mVirtualDisplay?.release()
         } catch (e: java.lang.Exception) {
+            Log.d(LOG_TAG , "stopRecordingScreen sec is called finally  "  + e.message)
 
         } finally {
+            Log.d(LOG_TAG , "stopRecordingScreen final is called finally  "  )
             mMediaProjection = null
             mVirtualDisplay = null
         }
@@ -273,9 +289,11 @@ class MDScreenRecorder(mediaType: MediaType,
 
     private inner class MediaProjectionCallback : MediaProjection.Callback() {
         override fun onStop() {
+            Log.d(LOG_TAG , "onStop is called  ")
 
         }
     }
+
 
 }
 
