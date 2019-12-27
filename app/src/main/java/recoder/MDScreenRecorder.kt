@@ -47,7 +47,7 @@ class MDScreenRecorder(mediaType: MediaType,
 
         (mContext as Activity).startActivityForResult(
             mProjectionManager?.createScreenCaptureIntent(),
-            MDScreenRecorder.PERMISSION_CODE
+            RecorderConfig.PERMISSION_CODE
         )
     }
 
